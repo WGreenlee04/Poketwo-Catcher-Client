@@ -1,40 +1,54 @@
 import time
 
+import clipboard
 import keyboard
 import pyautogui
 
 
-def main(prefix, sleep_time, message):
+def main(prefix):
+    if input(
+            'Have discord open on your primary monitor in the "maximized"'
+            ' mode. Type \'Confirm \'to continue: ').lower != 'confirm':
+        exit()
+    print('Place your cursor over the Discord text box and press esc.')
+    while not keyboard.is_pressed('esc'):
+        pass
+    text_box_pos = pyautogui.position()
+    print('Place your cursor behind the fist letter of the last sent message and press esc.')
+    while not keyboard.is_pressed('esc'):
+        pass
+    message_pos = pyautogui.position()
+    print('Place your cursor at the edge of where the longest message can reach on the screen and press esc.')
+    while not keyboard.is_pressed('esc'):
+        pass
+    edge_pos = pyautogui.position()
+    print('Bot Starting in 3 Seconds, hold esc to stop the loop.')
     time.sleep(3)
-    true_sleep_time = int(round(float(sleep_time)))
-    screen_dim = pyautogui.size()
 
     while True:
-        pyautogui.click(390 / screen_dim[0] * 1920, 990 / screen_dim[1] * 1080)
-        pyautogui.typewrite(message)
+        pyautogui.click(text_box_pos.x, text_box_pos.y)
+        pyautogui.typewrite('.hint')
         pyautogui.press('enter')
         if keyboard.is_pressed('esc'):
             exit()
-        time.sleep(true_sleep_time)
+        time.sleep(1)
         if keyboard.is_pressed('esc'):
             exit()
-        pyautogui.moveTo(380 / screen_dim[0] * 1920, 930 / screen_dim[1] * 1080)
+        pyautogui.moveTo(message_pos.x, message_pos.y)
         pyautogui.mouseDown()
-        pyautogui.dragTo(1580 / screen_dim[0] * 1920, 930 / screen_dim[1] * 1080, duration=.2)
+        pyautogui.dragTo(message_pos.x, edge_pos.y, duration=.2)
         pyautogui.mouseUp()
         pyautogui.keyDown('ctrl')
         pyautogui.keyDown('c')
         pyautogui.keyUp('c')
         pyautogui.keyUp('ctrl')
-        pyautogui.click(390 / screen_dim[0] * 1920, 990 / screen_dim[1] * 1080)
-        pyautogui.typewrite(prefix + 'c ')
-        pyautogui.keyDown('ctrl')
-        pyautogui.keyDown('v')
-        pyautogui.keyUp('v')
-        pyautogui.keyUp('ctrl')
-        pyautogui.press('enter')
-        if keyboard.is_pressed('esc'):
-            exit()
+        pyautogui.click(text_box_pos.x, text_box_pos.y)
+        if clipboard.paste()[0] == '[':
+            text = str(clipboard.paste()).strip('[').strip(']').strip("'")
+            mons = text.split("','")
+            for mon in mons:
+                pyautogui.typewrite(prefix + 'c ' + mon)
+                time.sleep(1)
 
 
 def tester():
@@ -47,4 +61,4 @@ def tester():
 
 if __name__ == '__main__':
     # tester()
-    main(input('Bot Prefix: '), input('Clock Speed (seconds): '), input('Start Message: '))
+    main(input('Bot Prefix: '))
