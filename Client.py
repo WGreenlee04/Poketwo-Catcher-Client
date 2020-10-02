@@ -5,7 +5,7 @@ import keyboard
 import pyautogui
 
 
-def main(prefix):
+def main(prefix, high_duration):
     input(
         'Have discord open on your primary monitor in the "maximized"'
         ' mode. Type \'Confirm \'to continue: ')
@@ -38,7 +38,7 @@ def main(prefix):
             exit()
         pyautogui.moveTo(message_pos.x, message_pos.y)
         pyautogui.mouseDown()
-        pyautogui.dragTo(edge_pos.x, message_pos.y, duration=.2)
+        pyautogui.dragTo(edge_pos.x, message_pos.y, duration=high_duration)
         pyautogui.mouseUp()
         pyautogui.keyDown('ctrl')
         pyautogui.keyDown('c')
@@ -46,14 +46,15 @@ def main(prefix):
         pyautogui.keyUp('ctrl')
         pyautogui.click(text_box_pos.x, text_box_pos.y)
         try:
-            if clipboard.paste() is not None and clipboard.paste()[0] == '[':
-                text = str(clipboard.paste()).strip().strip('\n').strip('[').strip(']').strip("'")
-                mons = text.split("','")
+            pastebin = clipboard.paste()
+            if pastebin is not None and pastebin[0] == '[':
+                text = str(pastebin).strip().strip('\n').strip('[').strip(']').strip('\'')
+                mons = text.split('\', \'')
                 for mon in mons:
                     pyautogui.typewrite(prefix + 'c ' + mon)
                     pyautogui.press('enter')
         except IndexError:
-            print(IndexError)
+            print("Pokemon detected.")
 
 
 def tester():
@@ -66,4 +67,4 @@ def tester():
 
 if __name__ == '__main__':
     # tester()
-    main(input('Bot Prefix: '))
+    main(input('Bot Prefix: '), float(input('Highlight Duration (default .12s): ') or .12))
