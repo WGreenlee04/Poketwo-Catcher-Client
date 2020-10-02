@@ -72,7 +72,11 @@ def main(prefix, high_duration):
                         pyautogui.press('enter')
             except IndexError:
                 print("Pokemon detected.")
-        if err_chk and float(clipboard.paste()) == key:
+        try:
+            test = float(clipboard.paste())
+        except ValueError:
+            test = 0
+        if err_chk and test == key:
             # restart the discord window
             pyautogui.click(exit_button_pos.x, exit_button_pos.y)
             subprocess.run(browser_path)
