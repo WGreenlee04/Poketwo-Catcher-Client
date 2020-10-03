@@ -2,6 +2,7 @@ import random
 import subprocess
 import time
 from pathlib import Path
+import webbrowser
 
 import clipboard
 import keyboard
@@ -9,14 +10,8 @@ import pyautogui
 
 
 def main(prefix, high_duration):
-    input(
-        'Have discord open in browser to the channel you wish in the "maximized"'
-        ' mode. IT MUST BE THE ONLY TAB OPEN IN THAT BROWSER. Type \'Confirm \'to continue: ')
-    discord_url = input('Please give the url of your discord channel '
-                        '(leave blank for no error checking): ')
-    err_chk = bool(discord_url)
-    if err_chk:
-        browser_path = Path(input('Please give the path to your chosen browser executable on your system: '))
+    print('This bot uses the WEB BASED version of discord.')
+    discord_url = input('Please give the url of your chosen discord channel: ')
     print('Place your cursor over the Discord text box and press esc.')
     while not keyboard.is_pressed('esc'):
         pass
@@ -36,13 +31,17 @@ def main(prefix, high_duration):
     while not keyboard.is_pressed('esc'):
         pass
     exit_button_pos = pyautogui.position()
+    input(
+        'Make sure the browser you choose to run discord in has NO TABS OPEN and is not running.'
+        'Type \'Confirm \'to continue: ')
     print('Bot Starting in 3 Seconds, hold esc to stop the loop.')
     time.sleep(3)
-
+    webbrowser.open(discord_url)
+    time.sleep(5)
+    clipboard.copy(str(random.random()))
     while True:
-        if err_chk:
-            key = random.random()
-            clipboard.copy(str(key))
+        start_clipboard = clipboard.paste()
+        cb_changed = False
         # should cover one pokemon spawn timer
         for i in range(0, 20):
             pyautogui.click(text_box_pos.x, text_box_pos.y)
@@ -61,6 +60,7 @@ def main(prefix, high_duration):
             pyautogui.keyDown('c')
             pyautogui.keyUp('c')
             pyautogui.keyUp('ctrl')
+            cb_changed = cb_changed or (clipboard.paste() != start_clipboard)
             pyautogui.click(text_box_pos.x, text_box_pos.y)
             try:
                 pastebin = clipboard.paste()
@@ -72,13 +72,10 @@ def main(prefix, high_duration):
                         pyautogui.press('enter')
             except IndexError:
                 print("Pokemon detected.")
-        if err_chk and float(clipboard.paste()) == key:
+        if not cb_changed:
             # restart the discord window
             pyautogui.click(exit_button_pos.x, exit_button_pos.y)
-            subprocess.run(browser_path)
-            time.sleep(5)
-            pyautogui.typewrite(discord_url)
-            pyautogui.press('enter')
+            webbrowser.open(discord_url)
             time.sleep(5)
 
 
