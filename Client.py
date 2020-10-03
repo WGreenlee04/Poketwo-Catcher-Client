@@ -72,6 +72,7 @@ def main(prefix, high_duration):
                         pyautogui.press('enter')
             except IndexError:
                 print("Pokemon detected.")
+
         if not cb_changed:
             # restart the discord window
             pyautogui.click(exit_button_pos.x, exit_button_pos.y)
