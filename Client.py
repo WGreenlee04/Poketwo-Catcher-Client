@@ -1,7 +1,5 @@
 import random
-import subprocess
 import time
-from pathlib import Path
 import webbrowser
 
 import clipboard
