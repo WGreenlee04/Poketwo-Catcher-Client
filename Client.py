@@ -7,7 +7,7 @@ import keyboard
 import pyautogui
 
 
-def main(prefix, high_duration):
+def main(prefix, high_duration, wait_duration):
     print('This bot uses the WEB BASED version of discord.')
     discord_url = input('Please give the url of your chosen discord channel: ')
     print('Place your cursor over the Discord text box and press esc.')
@@ -61,11 +61,12 @@ def main(prefix, high_duration):
             sendMessage('spawn')
             if keyboard.is_pressed('esc'):
                 exit()
-            time.sleep(1)
+            time.sleep(wait_duration)
             if keyboard.is_pressed('esc'):
                 exit()
 
         sendMessage(f'{prefix}hint')
+        time.sleep(wait_duration*3)
         copy()
         cb_changed = cb_changed or (clipboard.paste() != start_clipboard)
         pyautogui.click(text_box_pos.x, text_box_pos.y)
@@ -76,6 +77,7 @@ def main(prefix, high_duration):
             for mon in mons:
                 pyautogui.typewrite(f'{prefix}c {mon}')
                 pyautogui.press('enter')
+                time.sleep(wait_duration)
 
         if not cb_changed:
             # restart the discord window
@@ -85,4 +87,5 @@ def main(prefix, high_duration):
 
 
 if __name__ == '__main__':
-    main(input('Bot Prefix: '), float(input('Highlight Duration (default .12s): ') or .12))
+    main(input('Bot Prefix: '), float(input('Highlight Duration (default .12s): ') or .12),
+         int(input('Message wait duration (in whole seconds, default 1): ') or 1))
