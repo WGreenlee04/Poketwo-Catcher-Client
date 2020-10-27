@@ -37,45 +37,51 @@ def main(prefix, high_duration):
     webbrowser.open(discord_url)
     time.sleep(5)
     clipboard.copy(str(random.random()))
+
+    def sendMessage(message):
+        pyautogui.click(text_box_pos.x, text_box_pos.y)
+        pyautogui.typewrite(message)
+        pyautogui.press('enter')
+
+    def copy():
+        pyautogui.moveTo(message_pos.x, message_pos.y)
+        pyautogui.mouseDown()
+        pyautogui.dragTo(edge_pos.x, message_pos.y, duration=high_duration)
+        pyautogui.mouseUp()
+        pyautogui.keyDown('ctrl')
+        pyautogui.keyDown('c')
+        pyautogui.keyUp('c')
+        pyautogui.keyUp('ctrl')
+
     while True:
         start_clipboard = clipboard.paste()
         cb_changed = False
         # should cover one pokemon spawn timer
-        for i in range(0, 20):
-            pyautogui.click(text_box_pos.x, text_box_pos.y)
-            pyautogui.typewrite(f'{prefix}hint')
-            pyautogui.press('enter')
+        for i in range(0, 30):
+            sendMessage('spawn')
             if keyboard.is_pressed('esc'):
                 exit()
             time.sleep(1)
             if keyboard.is_pressed('esc'):
                 exit()
-            pyautogui.moveTo(message_pos.x, message_pos.y)
-            pyautogui.mouseDown()
-            pyautogui.dragTo(edge_pos.x, message_pos.y, duration=high_duration)
-            pyautogui.mouseUp()
-            pyautogui.keyDown('ctrl')
-            pyautogui.keyDown('c')
-            pyautogui.keyUp('c')
-            pyautogui.keyUp('ctrl')
-            cb_changed = cb_changed or (clipboard.paste() != start_clipboard)
-            pyautogui.click(text_box_pos.x, text_box_pos.y)
-            try:
-                pastebin = clipboard.paste()
-                if pastebin and pastebin[0] == '[':
-                    text = str(pastebin).strip().strip('\n').strip('[').strip(']').strip('\'')
-                    mons = text.split('\', \'')
-                    for mon in mons:
-                        pyautogui.typewrite(prefix + 'c ' + mon)
-                        pyautogui.press('enter')
-            except IndexError:
-                print("Pokemon detected.")
+
+        sendMessage(f'{prefix}hint')
+        copy()
+        cb_changed = cb_changed or (clipboard.paste() != start_clipboard)
+        pyautogui.click(text_box_pos.x, text_box_pos.y)
+        pastebin = clipboard.paste()
+        if pastebin and len(pastebin) != 0 and pastebin[0] == '[':
+            text = str(pastebin).strip().strip('\n').strip('[').strip(']').strip('\'')
+            mons = text.split('\', \'')
+            for mon in mons:
+                pyautogui.typewrite(f'{prefix}c {mon}')
+                pyautogui.press('enter')
 
         if not cb_changed:
             # restart the discord window
             pyautogui.click(exit_button_pos.x, exit_button_pos.y)
             webbrowser.open(discord_url)
-            time.sleep(5)
+            time.sleep(8)
 
 
 if __name__ == '__main__':
